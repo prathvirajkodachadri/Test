@@ -86,3 +86,21 @@ content/book.js         ← your book goes here
 
 Any static host will do. For GitHub Pages: push this repository and enable
 Pages for the branch root — no workflow or build configuration needed.
+
+## Chapter-end pictures
+
+Each chapter can show an illustration after its last paragraph. In
+`content/book.js`, add to any chapter object:
+
+```js
+{
+  title: "The House on Ember Street",
+  image: "assets/img/chapters/ch1.jpg",  // shown at the end of the chapter
+  caption: "The house on Ember Street, waiting.", // optional
+  alt: "An old house at dusk",                    // optional
+  body: [ /* ... */ ]
+}
+```
+
+Drop your own files into `assets/img/chapters/` and point `image` at them.
+Chapters without an `image` simply render as before.
