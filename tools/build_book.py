@@ -40,6 +40,35 @@ AFTERWORD = {
     ],
 }
 
+# The PDF runs the preface's closing sign-off into the last paragraph. Pull it
+# out into its own right-aligned `.signature` block, the same way the afterword
+# ends.
+SIGNOFF_RE = re.compile(
+    r"(\u0caa\u0ccd\u0cb0\u0cbf\u0cd5\u0ca4\u0cbf\u0caf\u0cbf\u0c82\u0ca6[^<]*?)\s*"
+    r"(\u0caa\u0cc3\u0ca5\u0ccd\u0cb5\u0cbf\u0cb0\u0cbe\u0c9c\u0ccd\s+\u0c95\u0cca\u0ca1\u0c9a\u0cbe\u0ca6\u0ccd\u0cb0\u0cbf)\s*$"
+)
+
+
+def split_signature(body):
+    """Split a trailing "ಪ್ರೀತಿಯಿಂದ ... <name>" sign-off into its own block."""
+    if not body:
+        return body
+    last = body[-1]
+    if not (last.startswith("<p>") and last.endswith("</p>")):
+        return body
+    inner = last[3:-4]
+    m = SIGNOFF_RE.search(inner)
+    if not m:
+        return body
+    lead = inner[:m.start()].strip()
+    salutation, name = m.group(1).strip().rstrip(","), m.group(2).strip()
+    out = body[:-1]
+    if lead:
+        out.append("<p>" + lead + "</p>")
+    out.append('<p class="signature">%s,<br>%s</p>' % (salutation, name))
+    return out
+
+
 KANNADA_DIGITS = "೦೧೨೩೪೫೬೭೮೯"
 
 
@@ -327,7 +356,7 @@ def main(pages_path, out_path):
             "type": "preface",
             "label": "Preface",
             "title": "ಮುನ್ನುಡಿ",
-            "body": build_body(intro[1:], "ಮುನ್ನುಡಿ"),
+            "body": split_signature(build_body(intro[1:], "ಮುನ್ನುಡಿ")),
         })
 
     for num, lines in split_chapters(stream[first_ch:]):
