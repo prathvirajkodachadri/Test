@@ -60,7 +60,7 @@ a { color: var(--ember); }
 /* ---------------- Top bar ---------------- */
 
 .topbar {
-  position: sticky; top: 0; z-index: 60;
+  position: sticky; top: 0; z-index: 100;
   background: rgba(246,242,233,.88);
   backdrop-filter: saturate(160%) blur(10px);
   border-bottom: 1px solid var(--rule);
@@ -101,6 +101,7 @@ a { color: var(--ember); }
   padding: .45rem .7rem; border-radius: 7px; border: 1px solid transparent;
   background: none; cursor: pointer; line-height: 1;
   display: inline-flex; align-items: center; gap: .4rem;
+  transition: all 0.2s ease;
 }
 .tb-btn:hover { background: var(--paper-2); color: var(--ink); }
 .tb-btn[aria-current="page"] { color: var(--ember); border-color: var(--rule); background: var(--card); }
@@ -123,16 +124,17 @@ a { color: var(--ember); }
 /* ---------------- Drawer ---------------- */
 
 .drawer-scrim {
-  position: fixed; inset: 0; z-index: 70;
+  position: fixed; inset: 0; z-index: 90;
   background: rgba(35,32,28,.32);
   animation: fade .18s ease;
 }
 @keyframes fade { from { opacity: 0 } }
 
 .drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 80;
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 95;
   width: min(360px, 88vw);
-  background: var(--card);
+  background: rgba(255, 253, 248, 0.95);
+  backdrop-filter: blur(12px);
   border-left: 1px solid var(--rule);
   box-shadow: -20px 0 50px -30px rgba(35,32,28,.5);
   display: flex; flex-direction: column;
@@ -171,6 +173,7 @@ a { color: var(--ember); }
   padding: .7rem 1.3rem; text-decoration: none; color: var(--ink);
   border-left: 3px solid transparent; font-size: 1rem; line-height: 1.4;
   min-height: 44px;
+  transition: all 0.2s ease;
 }
 .drawer-item:hover { background: var(--paper-2); }
 .drawer-item[aria-current="page"] {
@@ -482,30 +485,58 @@ article.chapter { padding: 3.5rem 0 1rem; }
   border-radius: 4px;
 }
 
-/* Persistent floating TOC button on reading pages (mobile-friendly) */
+/* Persistent floating TOC button on reading pages */
 #fab-toc {
   position: fixed;
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  right: calc(1.25rem + env(safe-area-inset-right, 0px));
-  z-index: 90;
-  background: var(--card);
-  border: 1px solid var(--rule);
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1.5rem + env(safe-area-inset-right, 0px));
+  z-index: 110;
+  background: var(--ember);
+  border: 1px solid var(--ember);
   border-radius: 9999px;
-  padding: .55rem .9rem;
-  box-shadow: var(--shadow);
+  padding: 0 1.25rem;
+  box-shadow: 0 4px 14px rgba(168, 85, 43, 0.4);
   font-family: var(--sans);
-  font-size: .82rem;
-  display: none;
+  font-size: .85rem;
+  font-weight: 600;
+  display: flex;
   align-items: center;
-  gap: .4rem;
-  color: var(--ink);
+  gap: .5rem;
+  color: #fff;
   text-decoration: none;
-  min-height: 44px;
+  min-height: 48px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.03em;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
 }
-#fab-toc svg { width: 18px; height: 18px; }
-@media (max-width: 640px) {
-  #fab-toc { display: flex; }
+#fab-toc svg { 
+  width: 20px; 
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
 }
+#fab-toc:hover {
+  background: var(--ember-soft);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(168, 85, 43, 0.5);
+}
+#fab-toc:active {
+  transform: translateY(-1px) scale(0.96);
+}
+#fab-toc.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide FAB on very top of the page on desktop to avoid overlap with topbar toggle if desired, 
+   but usually it's fine since topbar is sticky. 
+   Let's keep it simple and always show it if it's "perfect". */
 
 /* ---- Inline (mid-chapter) illustration ---- */
 .prose .inline-figure {
