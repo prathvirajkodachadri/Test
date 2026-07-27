@@ -1,8 +1,9 @@
 """Turn the extracted page/line JSON into content/book.js.
 
 Reads pages.json (produced by extract_pdf.py) and emits the `window.BOOK`
-structure the reader expects: meta + an array of chapters whose `body` is a
-list of HTML block strings.
+structure the reader expects: meta + an array of reading sections whose `body`
+is a list of HTML block strings. Sections may be typed as `preface`, `chapter`
+(default), or `afterword`; only real chapters are numbered in the reader.
 """
 import json
 import re
@@ -25,7 +26,18 @@ META = {
         "ಓದಬೇಡಿ.\" ದೇವರನ್ನು ಹುಡುಕಲು ಹಿಮಾಲಯಕ್ಕಲ್ಲ, ಕನ್ನಡಿಯ ಮುಂದೆ ನಿಂತರೆ ಸಾಕು "
         "ಎಂಬ ಕಟುಸತ್ಯವನ್ನು ಮೆದುಳಿನ ವಿಜ್ಞಾನದ ಮೂಲಕ ಶೋಧಿಸುವ ಪುಸ್ತಕ."
     ),
-    "cover": "",
+    "cover": "assets/img/mainpage.jpg",
+}
+
+AFTERWORD = {
+    "type": "afterword",
+    "label": "Afterword",
+    "title": "ಹಿನ್ನುಡಿ",
+    "body": [
+        '<p>ಪುಸ್ತಕದ ಮುನ್ನುಡಿಯಲ್ಲಿ ನಾನು ನಿಮಗೊಂದು ಎಚ್ಚರಿಕೆ ನೀಡಿದ್ದೆ—"ಸತ್ಯ ಬೇಕಿರುವವರು ಮಾತ್ರ ಓದಿ" ಎಂದು. ಈಗ ನೀವು ಈ ಕೊನೆಯ ಪುಟವನ್ನು ತಲುಪಿದ್ದೀರಿ ಎಂದರೆ, ನನ್ನಂತೆಯೇ ಸತ್ಯ ಹುಡುಕವ ಹಸಿವಿದ್ದ ಸಹಪಯಣಿಗರು.</p>',
+        "<p>ಕಲ್ಪನೆಯ ದೇವರನ್ನು ಕಳೆದುಕೊಂಡು, ವಾಸ್ತವದ ನಮ್ಮೊಳಗಿನ ದೇವರನ್ನು ನಾವು ಕಂಡುಕೊಳ್ಳುವ ಈ ಪಯಣದಲ್ಲಿ ನನ್ನೊಡನೆ ಹೆಜ್ಜೆ ಹಾಕಿದ ನಿಮಗೆ ಅನಂತ ಧನ್ಯವಾದಗಳು.</p>",
+        '<p class="signature">ಪ್ರೀತಿಯಿಂದ,<br>ಪೃಥ್ವಿರಾಜ್ ಕೊಡಚಾದ್ರಿ</p>',
+    ],
 }
 
 KANNADA_DIGITS = "೦೧೨೩೪೫೬೭೮೯"
@@ -312,8 +324,9 @@ def main(pages_path, out_path):
     intro = stream[:first_ch]
     if intro:
         chapters.append({
+            "type": "preface",
+            "label": "Preface",
             "title": "ಮುನ್ನುಡಿ",
-            "part": "ಪ್ರವೇಶ",
             "body": build_body(intro[1:], "ಮುನ್ನುಡಿ"),
         })
 
@@ -330,21 +343,36 @@ def main(pages_path, out_path):
             "body": build_body(body_lines, title),
         })
 
-    # attach the existing chapter-end illustrations, cycling if needed
+    # If the PDF stream left the afterword inside the final chapter, trim that
+    # inline copy; the reader models it as a separate back-matter section.
+    if chapters:
+        last = chapters[-1]
+        body = last.get("body", [])
+        cut = next((i for i, block in enumerate(body) if "ಹಿನ್ನುಡಿ" in block), -1)
+        if cut >= 0:
+            last["body"] = body[:cut] + ['<p>-ಸಮಾಪ್ತ-</p>']
+
+    # Attach one existing illustration to each of the 14 real chapters. Preface
+    # and afterword intentionally do not get chapter pictures.
     imgs = sorted(IMAGE_DIR.glob("ch*.jpg"), key=lambda q: int(re.search(r"\d+", q.name).group()))
-    for idx, ch in enumerate(chapters):
-        if imgs:
-            ch["image"] = "assets/img/chapters/" + imgs[idx % len(imgs)].name
+    real_chapters = [ch for ch in chapters if ch.get("type", "chapter") == "chapter"]
+    for idx, ch in enumerate(real_chapters):
+        if idx < len(imgs):
+            ch["image"] = "assets/img/chapters/" + imgs[idx].name
             ch["alt"] = ch["title"]
+
+    chapters.append(dict(AFTERWORD))
 
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(chapters, fh, ensure_ascii=False, indent=1)
 
     write_book_js(chapters, META, BOOK_JS)
 
-    print("chapters:", len(chapters))
+    print("sections:", len(chapters))
+    print("numbered chapters:", len([c for c in chapters if c.get("type", "chapter") == "chapter"]))
     for c in chapters:
-        print(f"  {c['title'][:50]:52} blocks={len(c['body'])}")
+        kind = c.get("type", "chapter")
+        print(f"  [{kind}] {c['title'][:50]:52} blocks={len(c['body'])}")
 
 
 
@@ -361,7 +389,7 @@ def write_book_js(chapters, meta, out_path):
     lines.append(" * Generated from the source PDF by tools/extract_pdf.py +")
     lines.append(" * tools/build_book.py. Edit those, or this file, to change the text.")
     lines.append(" *")
-    lines.append(" *   title / part / body  - see README.md for the full schema.")
+    lines.append(" *   type / title / part / body  - see README.md for the full schema.")
     lines.append(" */")
     lines.append("")
     lines.append("window.BOOK = {")
@@ -376,6 +404,10 @@ def write_book_js(chapters, meta, out_path):
     lines.append("  chapters: [")
     for ci, ch in enumerate(chapters):
         lines.append("    {")
+        if ch.get("type"):
+            lines.append(f"      type: {js(ch['type'])},")
+        if ch.get("label"):
+            lines.append(f"      label: {js(ch['label'])},")
         lines.append(f"      title: {js(ch['title'])},")
         if ch.get("part"):
             lines.append(f"      part: {js(ch['part'])},")

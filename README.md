@@ -4,7 +4,7 @@ A static, dependency-free website for reading a book online. No build step, no
 framework, no npm install — open `index.html` and it works.
 
 The text is *ನನ್ನೊಳಗಿನ ದೇವರು* ("The God Within Me") by ಪೃಥ್ವಿರಾಜ್ ಕೊಡಚಾದ್ರಿ —
-a preface plus fourteen chapters, in Kannada.
+a preface, fourteen numbered chapters, and an afterword, in Kannada.
 
 ## Quick start
 
@@ -33,9 +33,16 @@ window.BOOK = {
 
   chapters: [
     {
+      type:  "preface",      // optional: "preface", "chapter" (default), or "afterword"
+      label: "Preface",      // optional label shown above the title
+      title: "ಮುನ್ನುಡಿ",
+      body: [ /* ... */ ]
+    },
+    {
       title: "Chapter title",
       part:  "Part One",     // optional — consecutive chapters sharing a
                              // label are grouped in the contents and drawer
+      image: "assets/img/chapters/ch1.jpg", // optional chapter-end picture
       body: [
         "A plain string becomes a paragraph.",
         "<blockquote>Raw HTML is passed through untouched.</blockquote>",
@@ -43,13 +50,15 @@ window.BOOK = {
         "<p class=\"break\">* * *</p>"
       ]
     }
-    // ...more chapters
+    // ...more sections
   ]
 };
 ```
 
-The table of contents, chapter drawer, prev/next links, chapter numbering and
+The table of contents, contents drawer, prev/next links, chapter numbering and
 reading-time estimates are all generated from this data — you never edit HTML.
+Sections marked `type: "preface"` or `type: "afterword"` are included in the
+reading order but are not counted as numbered chapters.
 
 Supported `body` blocks: any string starting with `<p>`, `<h1>`–`<h6>`,
 `<blockquote>`, `<ul>`, `<ol>`, `<figure>`, `<img>`, `<hr>`, `<div>`,
@@ -58,12 +67,12 @@ Supported `body` blocks: any string starting with `<p>`, `<h1>`–`<h6>`,
 ## Features
 
 - **Cover page** with generated book-spine artwork (or your own cover image)
-- **Table of contents** with parts, chapter numbers and per-chapter reading times
-- **Slide-out chapter drawer** available from every page
-- **Prev / next chapter cards** at the foot of each chapter
-- **Keyboard navigation** — `←` / `→` between chapters, `Esc` closes the drawer
+- **Table of contents** with Preface, fourteen chapter numbers, Afterword, and reading times
+- **Slide-out contents drawer** available from every page
+- **Prev / next reading cards** at the foot of each section
+- **Keyboard navigation** — `←` / `→` through Preface, chapters, and Afterword; `Esc` closes the drawer
 - **Reading progress bar** in the header
-- **Deep-linkable URLs** — `#/`, `#/contents`, `#/ch/3`
+- **Deep-linkable URLs** — `#/`, `#/contents`, `#/preface`, `#/ch/3`, `#/afterword`
 - **Responsive** down to small phones, with a **print stylesheet** for PDF export
 - Accessible: skip link, ARIA current states, focus-visible controls, honours
   `prefers-reduced-motion`
@@ -82,7 +91,8 @@ and type scale via the CSS custom properties at the top of
 index.html              page shell — header, drawer, footer
 assets/css/style.css    all styling (design tokens at the top)
 assets/js/app.js        hash router + view rendering
-content/book.js         ← your book goes here
+content/book.js         ← your book sections go here
+assets/img/chapters/    fourteen chapter-end illustrations
 tools/extract_pdf.py    PDF → page/line JSON (see "Regenerating" below)
 tools/build_book.py     page/line JSON → content/book.js
 ```
@@ -113,6 +123,9 @@ Any static host will do. For GitHub Pages: push this repository and enable
 Pages for the branch root — no workflow or build configuration needed.
 
 ## Chapter-end pictures
+
+There are fourteen chapter-end pictures in `assets/img/chapters/` — one for
+each numbered chapter. The main page cover image is separate (`assets/img/mainpage.jpg`).
 
 Each chapter can show an illustration after its last paragraph. In
 `content/book.js`, add to any chapter object:
