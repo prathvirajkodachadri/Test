@@ -210,19 +210,43 @@
       });
     });
     drawerList.innerHTML = html;
+    
+    // Close drawer when an item is clicked (even if hash doesn't change)
+    drawerList.querySelectorAll(".drawer-item").forEach(function (a) {
+      a.addEventListener("click", function() {
+        // Delay slightly to allow navigation to start
+        setTimeout(closeDrawer, 50);
+      });
+    });
   }
 
   function openDrawer() {
     drawer.hidden = false;
     scrim.hidden = false;
-    document.getElementById("toc-toggle").setAttribute("aria-expanded", "true");
+    var toggle = document.getElementById("toc-toggle");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span class="sr-only">Close contents list</span>';
+    
+    var fab = document.getElementById("fab-toc");
+    if (fab) {
+      fab.classList.add("active");
+      fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> Close';
+    }
     document.body.style.overflow = "hidden";
   }
 
   function closeDrawer() {
     drawer.hidden = true;
     scrim.hidden = true;
-    document.getElementById("toc-toggle").setAttribute("aria-expanded", "false");
+    var toggle = document.getElementById("toc-toggle");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="sr-only">Open contents list</span>';
+
+    var fab = document.getElementById("fab-toc");
+    if (fab) {
+      fab.classList.remove("active");
+      fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg> Contents';
+    }
     document.body.style.overflow = "";
   }
 
@@ -382,13 +406,30 @@
     updateProgress();
   }
 
-  /* ---------------- reading progress ---------------- */
+  /* ---------------- reading progress & FAB visibility ---------------- */
 
   function updateProgress() {
     var doc = document.documentElement;
     var scrollable = doc.scrollHeight - window.innerHeight;
     var pct = scrollable > 8 ? (window.scrollY / scrollable) * 100 : 0;
     progressBar.style.width = Math.min(100, Math.max(0, pct)) + "%";
+
+    // Show/hide FAB based on scroll and route
+    var fab = document.getElementById("fab-toc");
+    if (fab) {
+      var route = currentRoute();
+      var isContentsPage = (route.name === "contents");
+      
+      if (window.scrollY > 200 && !isContentsPage) {
+        fab.style.opacity = "1";
+        fab.style.pointerEvents = "auto";
+        fab.style.transform = "translateY(0)";
+      } else {
+        fab.style.opacity = "0";
+        fab.style.pointerEvents = "none";
+        fab.style.transform = "translateY(20px)";
+      }
+    }
   }
 
   /* ---------------- events ---------------- */
@@ -422,10 +463,10 @@
     var fab = document.createElement('a');
     fab.id = 'fab-toc';
     fab.href = '#';
-    fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg> TOC';
+    fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg> Contents';
     fab.addEventListener('click', function (e) {
       e.preventDefault();
-      openDrawer();
+      drawer.hidden ? openDrawer() : closeDrawer();
     });
     document.body.appendChild(fab);
   }
