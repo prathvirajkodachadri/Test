@@ -106,11 +106,12 @@
   }
 
   function sectionSummary() {
-    var bits = [];
-    if (sections.some(isPreface)) bits.push("Preface");
-    bits.push(chapters.length + " chapter" + (chapters.length === 1 ? "" : "s"));
-    if (sections.some(isAfterword)) bits.push("Afterword");
-    return bits.join(" + ") + " · about " + totalTime() + " min";
+    return (
+      '<span class="sum-line">' +
+        chapters.length + " chapter" + (chapters.length === 1 ? "" : "s") +
+      "</span>" +
+      '<span class="sum-line">About ' + totalTime() + " min Reading Time</span>"
+    );
   }
 
   // A body entry that already looks like HTML is passed through;
@@ -246,7 +247,7 @@
           '<a class="btn btn-primary" href="' + startHref + '" data-link>Start reading</a>' +
           '<a class="btn" href="#/contents" data-link>Table of contents</a>' +
         "</div>" +
-        '<p class="byline" style="margin-top:2.2rem">' + sectionSummary() + "</p>" +
+        '<p class="byline book-summary">' + sectionSummary() + "</p>" +
       "</div>";
 
     // When a cover image is set, render an open-book spread:

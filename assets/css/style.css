@@ -244,6 +244,11 @@ main { min-height: 70vh; }
 .cover .blurb {
   color: var(--ink-soft); max-width: 32rem; margin: 0 auto 2.4rem; font-size: 1.05rem;
 }
+.cover .book-summary {
+  margin: 2.2rem 0 0;
+  line-height: 1.9;
+}
+.book-summary .sum-line { display: block; }
 
 /* ---- Two-page home spread: text cover (left) + image (right) ---- */
 
@@ -500,6 +505,30 @@ article.chapter { padding: 3.5rem 0 1rem; }
 #fab-toc svg { width: 18px; height: 18px; }
 @media (max-width: 640px) {
   #fab-toc { display: flex; }
+}
+
+/* ---- Inline (mid-chapter) illustration ---- */
+.prose .inline-figure {
+  margin: 2.4rem 0;
+  text-align: center;
+}
+.prose .inline-figure img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+.inline-figcaption {
+  margin-top: .85rem;
+  font-size: .9rem;
+  font-style: italic;
+  opacity: .75;
+}
+@media (max-width: 600px) {
+  .prose .inline-figure { margin: 1.8rem 0; }
 }
 
 /* ---- End-of-chapter illustration ---- */

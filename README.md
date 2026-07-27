@@ -142,3 +142,17 @@ Each chapter can show an illustration after its last paragraph. In
 
 Drop your own files into `assets/img/chapters/` and point `image` at them.
 Chapters without an `image` simply render as before.
+
+### Mid-chapter pictures
+
+To place a picture *between* paragraphs rather than at the end, add a
+`<figure class="inline-figure">` block directly to the chapter's `body` array
+at the position you want it — `<figure>` blocks are passed through verbatim:
+
+```js
+body: [
+  "<p>…the paragraph before the picture…</p>",
+  "<figure class=\"inline-figure\"><img src=\"assets/img/chapters/ch1-brain.jpg\" alt=\"…\" loading=\"lazy\" decoding=\"async\"><figcaption class=\"inline-figcaption\">Optional caption.</figcaption></figure>",
+  "<p>…the paragraph after…</p>"
+]
+```
