@@ -15,9 +15,10 @@ window.BOOK = {
     year: 2026,
     blurb:
       "\"ಸತ್ಯ ಬೇಕಿರುವವರು ಮಾತ್ರ ಓದಿ. ಸುಳ್ಳಲ್ಲಿ ಸುಖ ಕಾಣುತ್ತಿರುವವರು ದಯವಿಟ್ಟು ಓದಬೇಡಿ.\" ದೇವರನ್ನು ಹುಡುಕಲು ಹಿಮಾಲಯಕ್ಕಲ್ಲ, ಕನ್ನಡಿಯ ಮುಂದೆ ನಿಂತರೆ ಸಾಕು ಎಂಬ ಕಟುಸತ್ಯವನ್ನು ಮೆದುಳಿನ ವಿಜ್ಞಾನದ ಮೂಲಕ ಶೋಧಿಸುವ ಪುಸ್ತಕ.",
-    // Point this at any image (e.g. "assets/cover.jpg") to make it the
-    // cover/home screen. Currently a labelled placeholder you can swap later.
-    cover: "assets/img/cover-placeholder.svg"
+    // Home screen = open-book spread: left page is the text cover,
+    // right page is this image. Drop your picture at assets/img/mainpage.jpg
+    // (it falls back to a placeholder if the file is missing).
+    cover: "assets/img/mainpage.jpg"
   },
 
   chapters: [

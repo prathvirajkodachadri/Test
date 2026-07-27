@@ -136,15 +136,15 @@
   /* ---------------- views ---------------- */
 
   function viewCover() {
-    var plate = meta.cover
-      ? '<img src="' + esc(meta.cover) + '" alt="Cover of ' + esc(meta.title) + '">'
-      : '<p class="cp-title">' + esc(meta.title || "Untitled") + "</p>" +
-        '<div class="cp-rule"></div>' +
-        '<p class="cp-author">' + esc(meta.author || "") + "</p>";
-
-    return (
-      '<section class="cover"><div class="cover-card">' +
-        '<div class="cover-plate">' + plate + "</div>" +
+    // The original text cover (used as the left-hand page of the spread,
+    // and as the whole cover when no image is set).
+    var textCard =
+      '<div class="cover-card">' +
+        '<div class="cover-plate">' +
+          '<p class="cp-title">' + esc(meta.title || "Untitled") + "</p>" +
+          '<div class="cp-rule"></div>' +
+          '<p class="cp-author">' + esc(meta.author || "") + "</p>" +
+        "</div>" +
         "<h1>" + esc(meta.title || "Untitled") + "</h1>" +
         (meta.subtitle ? '<p class="subtitle">' + esc(meta.subtitle) + "</p>" : "") +
         '<p class="byline">' + esc(meta.author || "") + "</p>" +
@@ -156,8 +156,24 @@
         '<p class="byline" style="margin-top:2.2rem">' +
           chapters.length + " chapters · about " + totalTime() + " min" +
         "</p>" +
-      "</div></section>"
-    );
+      "</div>";
+
+    // When a cover image is set, render an open-book spread:
+    //   left page  = the original text cover
+    //   right page = the uploaded image
+    if (meta.cover) {
+      return (
+        '<section class="cover"><div class="spread">' +
+          '<div class="page page-text">' + textCard + "</div>" +
+          '<div class="page page-image">' +
+            '<img src="' + esc(meta.cover) + '" alt="Cover of ' + esc(meta.title) +
+              '" onerror="this.onerror=null;this.src=\'assets/img/cover-placeholder.svg\'">' +
+          "</div>" +
+        "</div></section>"
+      );
+    }
+
+    return '<section class="cover">' + textCard + "</section>";
   }
 
   function viewContents() {
