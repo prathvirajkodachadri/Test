@@ -179,6 +179,23 @@
     return html + "</div>";
   }
 
+  // End-of-chapter illustration. Set `image` (and optional `caption`,
+  // `alt`) on a chapter in content/book.js to show a picture at the end.
+  function chapterImageHTML(ch, n) {
+    var img = ch.image;
+    if (!img) return "";
+    var alt = ch.alt || ("Illustration for chapter " + n + ": " + (ch.title || ""));
+    var cap = ch.caption
+      ? '<figcaption class="chapter-figcaption">' + esc(ch.caption) + "</figcaption>"
+      : "";
+    return (
+      '<figure class="chapter-figure">' +
+        '<img src="' + esc(img) + '" alt="' + esc(alt) + '" loading="lazy" decoding="async">' +
+        cap +
+      "</figure>"
+    );
+  }
+
   function viewChapter(n) {
     var i = n - 1;
     var ch = chapters[i];
@@ -192,6 +209,7 @@
         "<h2>" + esc(ch.title) + "</h2>" +
         '<div class="chapter-rule"></div>' +
         '<div class="prose">' + chapterHTML(ch) + "</div>" +
+        chapterImageHTML(ch, n) +
       "</div></article>" +
       '<nav class="chapter-nav" aria-label="Chapter navigation">';
 

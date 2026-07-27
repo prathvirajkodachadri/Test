@@ -7,6 +7,10 @@
  * 2. Replace the objects in `chapters` with your own.
  *    - `title`  : chapter title shown in the table of contents
  *    - `part`   : (optional) section/part label used to group chapters
+ *    - `image`  : (optional) path to a picture shown at the END of the chapter
+ *                 e.g. "assets/img/chapters/ch1.jpg"
+ *    - `caption`: (optional) caption text shown under that picture
+ *    - `alt`    : (optional) alt text for accessibility
  *    - `body`   : an array of HTML strings. Each string is one block.
  *                 Plain text becomes a paragraph automatically.
  *                 You may also pass raw HTML, e.g.
@@ -32,6 +36,8 @@ window.BOOK = {
   chapters: [
     {
       title: "The House on Ember Street",
+      image: "assets/img/chapters/ch1.jpg",
+      caption: "The house on Ember Street, waiting.",
       part: "Part One — Arrival",
       body: [
         "ನಾನು The house had been waiting a long time but, and it had learned to wait well. Paint curled from the shutters in slow ribbons, and the porch boards had settled into a chord of complaint that sounded whenever the wind leaned against them.",
@@ -42,6 +48,8 @@ window.BOOK = {
     },
     {
       title: "What the Ticking Was",
+      image: "assets/img/chapters/ch2.jpg",
+      caption: "The lantern that was not a clock.",
       part: "Part One — Arrival",
       body: [
         "It took her three days to find the clock, and when she did, it was not a clock at all but a lantern with a mechanism inside it, brass and patient, turning over one small tooth at a time.",
@@ -53,6 +61,8 @@ window.BOOK = {
     },
     {
       title: "A Neighbour, Briefly",
+      image: "assets/img/chapters/ch3.jpg",
+      caption: "A neighbour, briefly.",
       part: "Part One — Arrival",
       body: [
         "The woman next door introduced herself as Edith and immediately began describing the neighbourhood as though reading from an inventory: the baker who closed on Thursdays, the road that flooded, the boy who delivered nothing but always knocked.",
@@ -63,6 +73,8 @@ window.BOOK = {
     },
     {
       title: "The Hours That Do Not Count",
+      image: "assets/img/chapters/ch4.jpg",
+      caption: "The hours that do not count.",
       part: "Part Two — The Lantern",
       body: [
         "Mira discovered that the lantern kept its own hours, and they did not correspond to anyone else's. It woke at nine and burned until some indeterminate point in the night, and in that interval the house behaved differently.",
@@ -72,6 +84,8 @@ window.BOOK = {
     },
     {
       title: "Correspondence",
+      image: "assets/img/chapters/ch5.jpg",
+      caption: "A letter addressed to the house.",
       part: "Part Two — The Lantern",
       body: [
         "The first letter appeared under the door on a morning with no post. It was addressed to the house rather than to her, and it began without greeting.",
@@ -82,6 +96,8 @@ window.BOOK = {
     },
     {
       title: "Second Floor, Nine O'Clock",
+      image: "assets/img/chapters/ch6.jpg",
+      caption: "Second floor, nine o'clock.",
       part: "Part Two — The Lantern",
       body: [
         "The upstairs rooms had been shut so long that opening them felt less like entering and more like interrupting.",
@@ -91,6 +107,8 @@ window.BOOK = {
     },
     {
       title: "The Field Behind the House",
+      image: "assets/img/chapters/ch7.jpg",
+      caption: "The field behind the house.",
       part: "Part Three — Departure",
       body: [
         "From the upstairs window, she could see a field that did not exist from the ground. She checked twice, going down and up again, out of a stubbornness she recognised from childhood.",
@@ -100,6 +118,8 @@ window.BOOK = {
     },
     {
       title: "Somewhere Quieter",
+      image: "assets/img/chapters/ch8.jpg",
+      caption: "Somewhere quieter.",
       part: "Part Three — Departure",
       body: [
         "On the last night, Mira set the lantern on the porch and sat beside it with a blanket over her knees, the way people used to sit before there was anything else to do.",

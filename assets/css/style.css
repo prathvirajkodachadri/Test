@@ -433,3 +433,27 @@ article.chapter { padding: 3.5rem 0 1rem; }
 @media (max-width: 640px) {
   #fab-toc { display: flex; }
 }
+
+/* ---- End-of-chapter illustration ---- */
+.chapter-figure {
+  margin: 3rem 0 0;
+  text-align: center;
+}
+.chapter-figure img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+.chapter-figcaption {
+  margin-top: .85rem;
+  font-size: .9rem;
+  font-style: italic;
+  opacity: .75;
+}
+@media (max-width: 600px) {
+  .chapter-figure { margin-top: 2rem; }
+}
