@@ -376,3 +376,53 @@ article.chapter { padding: 3.5rem 0 1rem; }
   html { scroll-behavior: auto; }
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ---------------- Mobile enhancements ---------------- */
+@media (max-width: 480px) {
+  body { font-size: 17.5px; line-height: 1.78; }
+  .wrap, .reader { padding-left: .9rem; padding-right: .9rem; }
+  .toc, .chapter-nav { padding-left: .6rem; padding-right: .6rem; }
+  .tb-btn { min-height: 44px; min-width: 44px; }
+}
+
+/* Chapter images – wide 21:9 mode */
+.prose img,
+.prose figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 4px;
+}
+
+body.wide-images .prose img,
+body.wide-images .prose figure img {
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  width: 100%;
+  max-height: 58vh;
+}
+
+/* Persistent floating TOC button on chapter pages (mobile-friendly) */
+#fab-toc {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 90;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 9999px;
+  padding: .55rem .9rem;
+  box-shadow: var(--shadow);
+  font-family: var(--sans);
+  font-size: .82rem;
+  display: none;
+  align-items: center;
+  gap: .4rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+#fab-toc svg { width: 18px; height: 18px; }
+@media (max-width: 640px) {
+  #fab-toc { display: flex; }
+}
