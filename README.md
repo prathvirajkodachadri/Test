@@ -152,7 +152,7 @@ at the position you want it — `<figure>` blocks are passed through verbatim:
 ```js
 body: [
   "<p>…the paragraph before the picture…</p>",
-  "<figure class=\"inline-figure\"><img src=\"assets/img/chapters/ch1-brain.jpg\" alt=\"…\" loading=\"lazy\" decoding=\"async\"><figcaption class=\"inline-figcaption\">Optional caption.</figcaption></figure>",
+  "<figure class=\"inline-figure\"><img src=\"assets/img/chapters/ch1-amygdala.jpg\" alt=\"…\" loading=\"lazy\" decoding=\"async\"><figcaption class=\"inline-figcaption\">Optional caption.</figcaption></figure>",
   "<p>…the paragraph after…</p>"
 ]
 ```
