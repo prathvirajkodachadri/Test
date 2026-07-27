@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loading…</title>
+<meta name="description" content="An online reader.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/" data-link>
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <strong id="brand-title">&nbsp;</strong>
+        <em id="brand-author">&nbsp;</em>
+      </span>
+    </a>
+
+    <nav class="topbar-nav" aria-label="Primary">
+      <a href="#/" data-link class="tb-btn">Cover</a>
+      <a href="#/contents" data-link class="tb-btn">Contents</a>
+      <button id="toc-toggle" class="tb-btn tb-btn-icon" aria-expanded="false" aria-controls="drawer" title="Chapter list">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span class="sr-only">Open chapter list</span>
+      </button>
+    </nav>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+</header>
+
+<!-- Slide-out chapter drawer -->
+<div class="drawer-scrim" id="drawer-scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Chapters" hidden>
+  <div class="drawer-head">
+    <span>Chapters</span>
+    <button id="drawer-close" class="icon-btn" title="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="sr-only">Close</span></button>
+  </div>
+  <nav class="drawer-list" id="drawer-list"></nav>
+</aside>
+
+<main id="main"></main>
+
+<footer class="sitefoot">
+  <p id="footer-line">&nbsp;</p>
+  <p class="muted small">Built as a static reading site — no build step, no dependencies.</p>
+</footer>
+
+<script src="content/book.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
