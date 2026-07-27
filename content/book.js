@@ -34,7 +34,7 @@ window.BOOK = {
       title: "The House on Ember Street",
       part: "Part One — Arrival",
       body: [
-        "ನಾನು The house had been waiting a long time, and it had learned to wait well. Paint curled from the shutters in slow ribbons, and the porch boards had settled into a chord of complaint that sounded whenever the wind leaned against them.",
+        "ನಾನು The house had been waiting a long time but, and it had learned to wait well. Paint curled from the shutters in slow ribbons, and the porch boards had settled into a chord of complaint that sounded whenever the wind leaned against them.",
         "Mira arrived on a Tuesday with two suitcases and no clear plan. She had rehearsed a speech for the taxi driver about why a person leaves a city, but he had asked nothing at all, and so the speech stayed folded in her mouth like a letter never sent.",
         "<blockquote>Some houses are built. Others are simply agreed upon by everyone who has ever slept in them.</blockquote>",
         "Inside, the air smelled of cold stone and old paper. She set the suitcases down in the hallway and listened. Far off, in a room she had not yet found, something was ticking."
