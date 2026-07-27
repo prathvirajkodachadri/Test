@@ -1,7 +1,10 @@
-# Book Reader
+# ನನ್ನೊಳಗಿನ ದೇವರು — Book Reader
 
 A static, dependency-free website for reading a book online. No build step, no
 framework, no npm install — open `index.html` and it works.
+
+The text is *ನನ್ನೊಳಗಿನ ದೇವರು* ("The God Within Me") by ಪೃಥ್ವಿರಾಜ್ ಕೊಡಚಾದ್ರಿ —
+a preface plus fourteen chapters, in Kannada.
 
 ## Quick start
 
@@ -80,7 +83,29 @@ index.html              page shell — header, drawer, footer
 assets/css/style.css    all styling (design tokens at the top)
 assets/js/app.js        hash router + view rendering
 content/book.js         ← your book goes here
+tools/extract_pdf.py    PDF → page/line JSON (see "Regenerating" below)
+tools/build_book.py     page/line JSON → content/book.js
 ```
+
+## Regenerating the text from the source PDF
+
+`content/book.js` is checked in, so nothing below is needed to run the site —
+it only matters if you want to re-derive the text from the original PDF.
+
+```bash
+pip install pymupdf fonttools
+python3 tools/extract_pdf.py Nannolagina_Devaru.pdf pages.json
+python3 tools/build_book.py pages.json chapters.json   # writes content/book.js
+```
+
+The source PDF was exported from Word with the Tunga font subset-embedded and
+a **broken ToUnicode map**: copying text out of it yields mojibake such as
+`ಪಿಶ್ೊ` instead of `ಪ್ರಶ್ನೆ`. `extract_pdf.py` ignores that map and instead
+reads each rendered glyph id, reverses the font's own GSUB ligature /
+substitution tables to recover the base glyphs, maps those through the `cmap`,
+and finally restores logical Kannada order (pre-base vowel signs, reph, vattu
+and akhand conjuncts). It also detects the two-column body layout so the text
+is read down one column at a time.
 
 ## Deploying
 

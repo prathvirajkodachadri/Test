@@ -48,9 +48,11 @@
     return (ch.body || []).map(blockToHTML).join("\n");
   }
 
+  // Counts words in any script: runs of non-space, non-punctuation characters.
+  // (A Latin-only \w pattern would report 0 for Kannada, Devanagari, CJK, …)
   function wordCount(ch) {
     var text = (ch.body || []).join(" ").replace(/<[^>]*>/g, " ");
-    var m = text.match(/[A-Za-z0-9'’-]+/g);
+    var m = text.match(/[^\s!-/:-@[-`{-~\u2010-\u2027\u2030-\u205e]+/g);
     return m ? m.length : 0;
   }
 

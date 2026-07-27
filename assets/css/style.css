@@ -14,8 +14,10 @@
   --ember:      #a8552b;
   --ember-soft: #c9744a;
 
-  --serif: "EB Garamond", Georgia, "Times New Roman", serif;
-  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Kannada faces are listed after the Latin ones so Latin text keeps its
+     original look while Kannada glyphs get a face that actually has them. */
+  --serif: "EB Garamond", "Noto Serif Kannada", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", "Noto Sans Kannada", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --measure: 34rem;      /* reading column width */
   --topbar-h: 62px;
