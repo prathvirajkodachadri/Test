@@ -288,24 +288,6 @@
 
   /* ---------------- boot ---------------- */
 
-  function initImagePreference() {
-    const toggle = document.createElement('button');
-    toggle.className = 'tb-btn tb-btn-icon';
-    toggle.innerHTML = '◻ 21:9';
-    toggle.title = 'Toggle wide images (21:9)';
-    toggle.setAttribute('aria-label', 'Toggle wide chapter images');
-    document.querySelector('.topbar-nav').appendChild(toggle);
-
-    const saved = localStorage.getItem('wideImages') === 'true';
-    if (saved) document.body.classList.add('wide-images');
-
-    toggle.addEventListener('click', () => {
-      document.body.classList.toggle('wide-images');
-      const isWide = document.body.classList.contains('wide-images');
-      localStorage.setItem('wideImages', isWide);
-    });
-  }
-
   function addFloatingTOCButton() {
     const fab = document.createElement('a');
     fab.id = 'fab-toc';
@@ -319,7 +301,6 @@
   }
 
   initChrome();
-  initImagePreference();
   addFloatingTOCButton();
   render();
 })();

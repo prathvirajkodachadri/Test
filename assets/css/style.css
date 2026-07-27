@@ -138,6 +138,17 @@ a { color: var(--ember); }
 }
 @keyframes slidein { from { transform: translateX(100%) } }
 
+/* IMPORTANT: the drawer/scrim are toggled purely via the `hidden` attribute
+   in app.js. Because `.drawer` sets `display: flex` explicitly, that
+   author-level rule would otherwise beat the browser's built-in
+   `[hidden] { display: none }` rule and leave the chapter list permanently
+   on screen, covering the book on phones. Force it closed whenever the
+   attribute is present. */
+.drawer[hidden],
+.drawer-scrim[hidden] {
+  display: none !important;
+}
+
 .drawer-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 1.1rem; border-bottom: 1px solid var(--rule);
@@ -154,9 +165,10 @@ a { color: var(--ember); }
 }
 
 .drawer-item {
-  display: flex; gap: .8rem; align-items: baseline;
-  padding: .6rem 1.3rem; text-decoration: none; color: var(--ink);
+  display: flex; gap: .8rem; align-items: center;
+  padding: .7rem 1.3rem; text-decoration: none; color: var(--ink);
   border-left: 3px solid transparent; font-size: 1rem; line-height: 1.4;
+  min-height: 44px;
 }
 .drawer-item:hover { background: var(--paper-2); }
 .drawer-item[aria-current="page"] {
@@ -260,9 +272,10 @@ main { min-height: 70vh; }
 .toc-part:first-child { margin-top: 0; }
 
 .toc-entry {
-  display: flex; align-items: baseline; gap: .9rem;
-  padding: .95rem .6rem; text-decoration: none; color: inherit;
+  display: flex; align-items: center; gap: .9rem;
+  padding: 1rem .6rem; text-decoration: none; color: inherit;
   border-radius: 8px; border-bottom: 1px solid var(--rule);
+  min-height: 44px;
 }
 .toc-entry:last-child { border-bottom: 0; }
 .toc-entry:hover { background: var(--card); }
@@ -383,9 +396,10 @@ article.chapter { padding: 3.5rem 0 1rem; }
   .wrap, .reader { padding-left: .9rem; padding-right: .9rem; }
   .toc, .chapter-nav { padding-left: .6rem; padding-right: .6rem; }
   .tb-btn { min-height: 44px; min-width: 44px; }
+  .drawer { width: 100vw; border-left: 0; }
 }
 
-/* Chapter images – wide 21:9 mode */
+/* Chapter images */
 .prose img,
 .prose figure img {
   max-width: 100%;
@@ -395,19 +409,11 @@ article.chapter { padding: 3.5rem 0 1rem; }
   border-radius: 4px;
 }
 
-body.wide-images .prose img,
-body.wide-images .prose figure img {
-  aspect-ratio: 21 / 9;
-  object-fit: cover;
-  width: 100%;
-  max-height: 58vh;
-}
-
 /* Persistent floating TOC button on chapter pages (mobile-friendly) */
 #fab-toc {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1.25rem + env(safe-area-inset-right, 0px));
   z-index: 90;
   background: var(--card);
   border: 1px solid var(--rule);
@@ -421,6 +427,7 @@ body.wide-images .prose figure img {
   gap: .4rem;
   color: var(--ink);
   text-decoration: none;
+  min-height: 44px;
 }
 #fab-toc svg { width: 18px; height: 18px; }
 @media (max-width: 640px) {
