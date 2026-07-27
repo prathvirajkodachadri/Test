@@ -2,7 +2,9 @@
    Book reader — hash-router application
    Routes:  #/            cover
             #/contents    table of contents
-            #/ch/<n>      chapter n (1-based)
+            #/preface     preface/front matter
+            #/ch/<n>      chapter n (1-based, excludes preface/afterword)
+            #/afterword   afterword/back matter
    ============================================================ */
 
 (function () {
@@ -12,12 +14,17 @@
   if (!BOOK || !Array.isArray(BOOK.chapters) || !BOOK.chapters.length) {
     document.getElementById("main").innerHTML =
       '<div class="wrap"><div class="page-head"><h2>No book content found</h2>' +
-      '<p class="muted">Add your chapters in <code>content/book.js</code>.</p></div></div>';
+      '<p class="muted">Add your book sections in <code>content/book.js</code>.</p></div></div>';
     return;
   }
 
   var meta = BOOK.meta || {};
-  var chapters = BOOK.chapters;
+
+  // `sections` is the complete reading order. A section can be typed as
+  // `preface`, `chapter` (default), or `afterword`. Only real chapters are
+  // counted and routed as #/ch/<n>.
+  var sections = BOOK.chapters;
+  var chapters = sections.filter(isChapter);
 
   var main = document.getElementById("main");
   var drawer = document.getElementById("drawer");
@@ -35,6 +42,77 @@
     });
   }
 
+  function sectionType(section) {
+    return String((section && (section.type || section.kind)) || "chapter").toLowerCase();
+  }
+
+  function isPreface(section) {
+    return sectionType(section) === "preface";
+  }
+
+  function isAfterword(section) {
+    return sectionType(section) === "afterword";
+  }
+
+  function isChapter(section) {
+    var type = sectionType(section);
+    return type !== "preface" && type !== "afterword" && type !== "frontmatter" && type !== "backmatter";
+  }
+
+  function firstIndexOfType(type) {
+    for (var i = 0; i < sections.length; i++) {
+      if (sectionType(sections[i]) === type) return i;
+    }
+    return -1;
+  }
+
+  function chapterNumberForIndex(sectionIndex) {
+    var n = 0;
+    for (var i = 0; i <= sectionIndex && i < sections.length; i++) {
+      if (isChapter(sections[i])) n++;
+    }
+    return n;
+  }
+
+  function sectionIndexForChapterNumber(chapterNumber) {
+    var n = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (!isChapter(sections[i])) continue;
+      n++;
+      if (n === chapterNumber) return i;
+    }
+    return -1;
+  }
+
+  function routeForSectionIndex(sectionIndex) {
+    var section = sections[sectionIndex];
+    if (!section) return "#/";
+    if (isPreface(section)) return "#/preface";
+    if (isAfterword(section)) return "#/afterword";
+    return "#/ch/" + chapterNumberForIndex(sectionIndex);
+  }
+
+  function sectionLabel(section, sectionIndex) {
+    if (section.label) return section.label;
+    if (isPreface(section)) return "Preface";
+    if (isAfterword(section)) return "Afterword";
+    return "Chapter " + chapterNumberForIndex(sectionIndex) + " of " + chapters.length;
+  }
+
+  function sectionMarker(section, sectionIndex) {
+    if (isPreface(section)) return "Preface";
+    if (isAfterword(section)) return "Afterword";
+    return String(chapterNumberForIndex(sectionIndex)).padStart(2, "0");
+  }
+
+  function sectionSummary() {
+    var bits = [];
+    if (sections.some(isPreface)) bits.push("Preface");
+    bits.push(chapters.length + " chapter" + (chapters.length === 1 ? "" : "s"));
+    if (sections.some(isAfterword)) bits.push("Afterword");
+    return bits.join(" + ") + " · about " + totalTime() + " min";
+  }
+
   // A body entry that already looks like HTML is passed through;
   // anything else becomes a paragraph.
   function blockToHTML(block) {
@@ -44,35 +122,35 @@
       : "<p>" + t + "</p>";
   }
 
-  function chapterHTML(ch) {
-    return (ch.body || []).map(blockToHTML).join("\n");
+  function sectionHTML(section) {
+    return (section.body || []).map(blockToHTML).join("\n");
   }
 
   // Counts words in any script: runs of non-space, non-punctuation characters.
   // (A Latin-only \w pattern would report 0 for Kannada, Devanagari, CJK, …)
-  function wordCount(ch) {
-    var text = (ch.body || []).join(" ").replace(/<[^>]*>/g, " ");
+  function wordCount(section) {
+    var text = (section.body || []).join(" ").replace(/<[^>]*>/g, " ");
     var m = text.match(/[^\s!-/:-@[-`{-~\u2010-\u2027\u2030-\u205e]+/g);
     return m ? m.length : 0;
   }
 
-  function readingTime(ch) {
-    return Math.max(1, Math.round(wordCount(ch) / WPM));
+  function readingTime(section) {
+    return Math.max(1, Math.round(wordCount(section) / WPM));
   }
 
   function totalTime() {
-    var w = chapters.reduce(function (a, c) { return a + wordCount(c); }, 0);
+    var w = sections.reduce(function (a, section) { return a + wordCount(section); }, 0);
     return Math.max(1, Math.round(w / WPM));
   }
 
-  // Group chapters by their optional `part` label, preserving order.
+  // Group sections by their optional `part` label, preserving order.
   function grouped() {
     var out = [];
-    chapters.forEach(function (ch, i) {
-      var label = ch.part || "";
+    sections.forEach(function (section, i) {
+      var label = section.part || "";
       var last = out[out.length - 1];
       if (!last || last.label !== label) out.push({ label: label, items: [] });
-      out[out.length - 1].items.push({ ch: ch, index: i });
+      out[out.length - 1].items.push({ section: section, index: i });
     });
     return out;
   }
@@ -81,10 +159,22 @@
     var h = location.hash.replace(/^#/, "");
     if (!h || h === "/" ) return { name: "cover" };
     if (h === "/contents") return { name: "contents" };
+
+    if (h === "/preface") {
+      var prefaceIndex = firstIndexOfType("preface");
+      if (prefaceIndex >= 0) return { name: "section", index: prefaceIndex };
+    }
+
+    if (h === "/afterword") {
+      var afterwordIndex = firstIndexOfType("afterword");
+      if (afterwordIndex >= 0) return { name: "section", index: afterwordIndex };
+    }
+
     var m = h.match(/^\/ch\/(\d+)$/);
     if (m) {
       var n = parseInt(m[1], 10);
-      if (n >= 1 && n <= chapters.length) return { name: "chapter", n: n };
+      var sectionIndex = sectionIndexForChapterNumber(n);
+      if (sectionIndex >= 0) return { name: "section", index: sectionIndex };
     }
     return { name: "cover" };
   }
@@ -109,10 +199,12 @@
     grouped().forEach(function (g) {
       if (g.label) html += '<div class="drawer-part">' + esc(g.label) + "</div>";
       g.items.forEach(function (it) {
+        var marker = sectionMarker(it.section, it.index);
+        var markerClass = isChapter(it.section) ? "num" : "num word";
         html +=
-          '<a class="drawer-item" href="#/ch/' + (it.index + 1) + '" data-link data-ch="' + (it.index + 1) + '">' +
-            '<span class="num">' + (it.index + 1) + "</span>" +
-            "<span>" + esc(it.ch.title) + "</span>" +
+          '<a class="drawer-item" href="' + routeForSectionIndex(it.index) + '" data-link data-section="' + it.index + '">' +
+            '<span class="' + markerClass + '">' + esc(marker) + "</span>" +
+            "<span>" + esc(it.section.title) + "</span>" +
           "</a>";
       });
     });
@@ -138,6 +230,7 @@
   function viewCover() {
     // The original text cover (used as the left-hand page of the spread,
     // and as the whole cover when no image is set).
+    var startHref = routeForSectionIndex(0);
     var textCard =
       '<div class="cover-card">' +
         '<div class="cover-plate">' +
@@ -150,12 +243,10 @@
         '<p class="byline">' + esc(meta.author || "") + "</p>" +
         (meta.blurb ? '<p class="blurb">' + esc(meta.blurb) + "</p>" : "") +
         '<div class="cta-row">' +
-          '<a class="btn btn-primary" href="#/ch/1" data-link>Start reading</a>' +
+          '<a class="btn btn-primary" href="' + startHref + '" data-link>Start reading</a>' +
           '<a class="btn" href="#/contents" data-link>Table of contents</a>' +
         "</div>" +
-        '<p class="byline" style="margin-top:2.2rem">' +
-          chapters.length + " chapters · about " + totalTime() + " min" +
-        "</p>" +
+        '<p class="byline" style="margin-top:2.2rem">' + sectionSummary() + "</p>" +
       "</div>";
 
     // When a cover image is set, render an open-book spread:
@@ -185,11 +276,13 @@
     grouped().forEach(function (g) {
       if (g.label) html += '<div class="toc-part">' + esc(g.label) + "</div>";
       g.items.forEach(function (it) {
+        var marker = sectionMarker(it.section, it.index);
+        var markerClass = isChapter(it.section) ? "n" : "n word";
         html +=
-          '<a class="toc-entry" href="#/ch/' + (it.index + 1) + '" data-link>' +
-            '<span class="n">' + String(it.index + 1).padStart(2, "0") + "</span>" +
-            '<span class="t">' + esc(it.ch.title) + "</span>" +
-            '<span class="len">' + readingTime(it.ch) + " min</span>" +
+          '<a class="toc-entry" href="' + routeForSectionIndex(it.index) + '" data-link>' +
+            '<span class="' + markerClass + '">' + esc(marker) + "</span>" +
+            '<span class="t">' + esc(it.section.title) + "</span>" +
+            '<span class="len">' + readingTime(it.section) + " min</span>" +
           "</a>";
       });
     });
@@ -197,14 +290,14 @@
     return html + "</div>";
   }
 
-  // End-of-chapter illustration. Set `image` (and optional `caption`,
-  // `alt`) on a chapter in content/book.js to show a picture at the end.
-  function chapterImageHTML(ch, n) {
-    var img = ch.image;
+  // End-of-section illustration. Set `image` (and optional `caption`,
+  // `alt`) on a section in content/book.js to show a picture at the end.
+  function sectionImageHTML(section, sectionIndex) {
+    var img = section.image;
     if (!img) return "";
-    var alt = ch.alt || ("Illustration for chapter " + n + ": " + (ch.title || ""));
-    var cap = ch.caption
-      ? '<figcaption class="chapter-figcaption">' + esc(ch.caption) + "</figcaption>"
+    var alt = section.alt || ("Illustration for " + sectionLabel(section, sectionIndex) + ": " + (section.title || ""));
+    var cap = section.caption
+      ? '<figcaption class="chapter-figcaption">' + esc(section.caption) + "</figcaption>"
       : "";
     return (
       '<figure class="chapter-figure">' +
@@ -214,30 +307,30 @@
     );
   }
 
-  function viewChapter(n) {
-    var i = n - 1;
-    var ch = chapters[i];
-    var prev = chapters[i - 1];
-    var next = chapters[i + 1];
+  function viewSection(sectionIndex) {
+    var section = sections[sectionIndex];
+    var prev = sections[sectionIndex - 1];
+    var next = sections[sectionIndex + 1];
+    var typeClass = "section-" + sectionType(section).replace(/[^a-z0-9_-]+/g, "-");
 
     var html =
-      '<article class="chapter"><div class="reader">' +
-        (ch.part ? '<p class="chapter-part">' + esc(ch.part) + "</p>" : "") +
-        '<p class="chapter-num">Chapter ' + n + " of " + chapters.length + "</p>" +
-        "<h2>" + esc(ch.title) + "</h2>" +
+      '<article class="chapter ' + typeClass + '"><div class="reader">' +
+        (section.part ? '<p class="chapter-part">' + esc(section.part) + "</p>" : "") +
+        '<p class="chapter-num">' + esc(sectionLabel(section, sectionIndex)) + "</p>" +
+        "<h2>" + esc(section.title) + "</h2>" +
         '<div class="chapter-rule"></div>' +
-        '<div class="prose">' + chapterHTML(ch) + "</div>" +
-        chapterImageHTML(ch, n) +
+        '<div class="prose">' + sectionHTML(section) + "</div>" +
+        sectionImageHTML(section, sectionIndex) +
       "</div></article>" +
-      '<nav class="chapter-nav" aria-label="Chapter navigation">';
+      '<nav class="chapter-nav" aria-label="Reading navigation">';
 
     html += prev
-      ? '<a class="navcard prev" href="#/ch/' + (n - 1) + '" data-link>' +
+      ? '<a class="navcard prev" href="' + routeForSectionIndex(sectionIndex - 1) + '" data-link>' +
           '<span class="dir">← Previous</span><span class="name">' + esc(prev.title) + "</span></a>"
       : '<a class="navcard prev is-empty" href="#/" data-link aria-hidden="true" tabindex="-1"><span class="dir">.</span><span class="name">.</span></a>';
 
     html += next
-      ? '<a class="navcard next" href="#/ch/' + (n + 1) + '" data-link>' +
+      ? '<a class="navcard next" href="' + routeForSectionIndex(sectionIndex + 1) + '" data-link>' +
           '<span class="dir">Next →</span><span class="name">' + esc(next.title) + "</span></a>"
       : '<a class="navcard next" href="#/contents" data-link>' +
           '<span class="dir">The end</span><span class="name">Back to contents</span></a>';
@@ -260,9 +353,9 @@
       main.innerHTML = viewContents();
       document.title = "Contents — " + (meta.title || "Untitled");
     } else {
-      main.innerHTML = viewChapter(route.n);
+      main.innerHTML = viewSection(route.index);
       document.title =
-        chapters[route.n - 1].title + " — " + (meta.title || "Untitled");
+        sections[route.index].title + " — " + (meta.title || "Untitled");
     }
 
     // Highlight active nav items
@@ -275,7 +368,7 @@
       }
     });
     drawerList.querySelectorAll(".drawer-item").forEach(function (a) {
-      if (route.name === "chapter" && +a.dataset.ch === route.n) {
+      if (route.name === "section" && +a.dataset.section === route.index) {
         a.setAttribute("aria-current", "page");
       } else {
         a.removeAttribute("aria-current");
@@ -317,19 +410,19 @@
     if (tag === "input" || tag === "textarea" || e.metaKey || e.ctrlKey || e.altKey) return;
 
     var r = currentRoute();
-    if (r.name !== "chapter") return;
-    if (e.key === "ArrowRight" && r.n < chapters.length) location.hash = "#/ch/" + (r.n + 1);
-    if (e.key === "ArrowLeft" && r.n > 1) location.hash = "#/ch/" + (r.n - 1);
+    if (r.name !== "section") return;
+    if (e.key === "ArrowRight" && r.index < sections.length - 1) location.hash = routeForSectionIndex(r.index + 1);
+    if (e.key === "ArrowLeft" && r.index > 0) location.hash = routeForSectionIndex(r.index - 1);
   });
 
   /* ---------------- boot ---------------- */
 
   function addFloatingTOCButton() {
-    const fab = document.createElement('a');
+    var fab = document.createElement('a');
     fab.id = 'fab-toc';
     fab.href = '#';
-    fab.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg> TOC`;
-    fab.addEventListener('click', e => {
+    fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg> TOC';
+    fab.addEventListener('click', function (e) {
       e.preventDefault();
       openDrawer();
     });

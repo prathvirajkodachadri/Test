@@ -143,7 +143,7 @@ a { color: var(--ember); }
 /* IMPORTANT: the drawer/scrim are toggled purely via the `hidden` attribute
    in app.js. Because `.drawer` sets `display: flex` explicitly, that
    author-level rule would otherwise beat the browser's built-in
-   `[hidden] { display: none }` rule and leave the chapter list permanently
+   `[hidden] { display: none }` rule and leave the contents list permanently
    on screen, covering the book on phones. Force it closed whenever the
    attribute is present. */
 .drawer[hidden],
@@ -179,6 +179,11 @@ a { color: var(--ember); }
 .drawer-item .num {
   font-family: var(--sans); font-size: .72rem; color: var(--ink-faint);
   min-width: 1.4em; flex: none;
+}
+.drawer-item .num.word {
+  min-width: 5.8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 /* ---------------- Layout ---------------- */
@@ -328,6 +333,11 @@ main { min-height: 70vh; }
   font-family: var(--sans); font-size: .74rem; color: var(--ink-faint);
   min-width: 1.8em; flex: none;
 }
+.toc-entry .n.word {
+  min-width: 6rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 .toc-entry .t { flex: 1; font-size: 1.1rem; }
 .toc-entry:hover .t { color: var(--ember); }
 .toc-entry .len {
@@ -375,6 +385,11 @@ article.chapter { padding: 3.5rem 0 1rem; }
   margin: 2.2rem 0; text-indent: 0;
 }
 .prose .break::first-letter { float: none; font-size: 1em; color: inherit; padding: 0; }
+.prose .signature {
+  margin-top: 2.2rem;
+  text-align: right;
+  color: var(--ink-soft);
+}
 
 /* ---------------- Chapter footer nav ---------------- */
 
@@ -454,7 +469,7 @@ article.chapter { padding: 3.5rem 0 1rem; }
   border-radius: 4px;
 }
 
-/* Persistent floating TOC button on chapter pages (mobile-friendly) */
+/* Persistent floating TOC button on reading pages (mobile-friendly) */
 #fab-toc {
   position: fixed;
   bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
