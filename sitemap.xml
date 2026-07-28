@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The reader is a hash-router single-page app: #/contents, #/ch/3 and friends
+  are fragments, which are never sent to a server and are therefore not
+  separate URLs. One canonical entry is correct here.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://prathvirajkodachadri.github.io/Test/</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://prathvirajkodachadri.github.io/Test/preview.jpg</image:loc>
+      <image:title>ನನ್ನೊಳಗಿನ ದೇವರು — ಪೃಥ್ವಿರಾಜ್ ಕೊಡಚಾದ್ರಿ</image:title>
+    </image:image>
+  </url>
+</urlset>

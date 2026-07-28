@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Social preview crawlers — these fetch the page but never run JavaScript,
+# so they rely entirely on the static meta tags in index.html.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+Sitemap: https://prathvirajkodachadri.github.io/Test/sitemap.xml
