@@ -24,4 +24,4 @@ Allow: /
 User-agent: Discordbot
 Allow: /
 
-Sitemap: https://prathvirajkodachadri.github.io/Test/sitemap.xml
+Sitemap: https://prathvirajkodachadri.github.io/nannolagina-devaru/sitemap.xml

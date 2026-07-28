@@ -115,7 +115,7 @@ to the server, so every shared URL returns the same fully-populated document.
 
 Absolute URLs are required — a crawler has no page context to resolve a
 relative path against — so `og:image`, `og:url` and `canonical` are all
-hardcoded to `https://prathvirajkodachadri.github.io/Test/…`. **If you fork
+hardcoded to `https://prathvirajkodachadri.github.io/nannolagina-devaru/…`. **If you fork
 this repository or move it to another domain, update those three values**,
 otherwise your previews will point at this site.
 
