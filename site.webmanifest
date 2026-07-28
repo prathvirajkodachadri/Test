@@ -1,0 +1,20 @@
+{
+  "name": "ನನ್ನೊಳಗಿನ ದೇವರು — ಪೃಥ್ವಿರಾಜ್ ಕೊಡಚಾದ್ರಿ",
+  "short_name": "ನನ್ನೊಳಗಿನ ದೇವರು",
+  "description": "ಭಯದಿಂದ ಅರಿವಿನೆಡೆಗೆ — ಹದಿನಾಲ್ಕು ಅಧ್ಯಾಯಗಳ ಕನ್ನಡ ಪುಸ್ತಕ, ಉಚಿತ ಆನ್‌ಲೈನ್ ಓದುಗ.",
+  "lang": "kn",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f6f2e9",
+  "theme_color": "#f6f2e9",
+  "categories": ["books", "education"],
+  "icons": [
+    { "src": "favicon-16x16.png", "sizes": "16x16", "type": "image/png" },
+    { "src": "favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "maskable" }
+  ]
+}

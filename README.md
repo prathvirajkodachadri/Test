@@ -88,14 +88,58 @@ and type scale via the CSS custom properties at the top of
 ## Project layout
 
 ```
-index.html              page shell — header, drawer, footer
+index.html              page shell — head metadata, header, drawer, footer
 assets/css/style.css    all styling (design tokens at the top)
 assets/js/app.js        hash router + view rendering
 content/book.js         ← your book sections go here
 assets/img/chapters/    fourteen chapter-end illustrations
+preview.jpg             1200×630 social share card
+favicon.ico             favicon (16/32/48), plus the PNG + apple-touch variants
+site.webmanifest        PWA manifest — name, icons, theme colour
+robots.txt              crawl rules + sitemap pointer
+sitemap.xml             single canonical URL
+.nojekyll               tell GitHub Pages to serve files as-is
+tools/make_preview.py   regenerates preview.jpg and the favicons
 tools/extract_pdf.py    PDF → page/line JSON (see "Regenerating" below)
 tools/build_book.py     page/line JSON → content/book.js
 ```
+
+## Link previews (Open Graph)
+
+Sharing the site on WhatsApp, Facebook, LinkedIn, Telegram or X shows a rich
+card: title, description, and `preview.jpg`. All of it comes from static tags
+in the `<head>` of `index.html` — social crawlers do not run JavaScript, so the
+metadata has to be in the initial HTML response rather than injected by
+`app.js`. Chapter links share cleanly too: `#/ch/3` is a fragment, never sent
+to the server, so every shared URL returns the same fully-populated document.
+
+Absolute URLs are required — a crawler has no page context to resolve a
+relative path against — so `og:image`, `og:url` and `canonical` are all
+hardcoded to `https://prathvirajkodachadri.github.io/Test/…`. **If you fork
+this repository or move it to another domain, update those three values**,
+otherwise your previews will point at this site.
+
+To regenerate the card and favicons after changing the cover, title or blurb:
+
+```bash
+pip install pillow uharfbuzz freetype-py
+python3 tools/make_preview.py
+```
+
+The script reads `content/book.js`, so the card always matches the book. It
+shapes Kannada with HarfBuzz — Pillow alone cannot position vowel signs, vattu
+or reph correctly — and keeps the JPEG under 300 KB, above which WhatsApp
+silently drops back to a small thumbnail. See the header of the script for the
+font setup.
+
+After deploying a change to the image or the tags, ask each platform to re-read
+the page — they cache aggressively:
+
+- Facebook / WhatsApp — <https://developers.facebook.com/tools/debug/> → *Scrape Again*
+  (WhatsApp uses Facebook's cache, so this fixes both)
+- X — <https://cards-dev.twitter.com/validator>
+- LinkedIn — <https://www.linkedin.com/post-inspector/>
+- Telegram — message [@WebpageBot](https://t.me/WebpageBot)
 
 ## Regenerating the text from the source PDF
 

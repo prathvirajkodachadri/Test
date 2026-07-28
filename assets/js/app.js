@@ -189,8 +189,14 @@
       (meta.title || "Untitled") + " — " + (meta.author || "Unknown") +
       (meta.year ? " · " + meta.year : "");
 
+    // index.html ships a hand-written SEO/Open Graph description that search
+    // engines and social crawlers already read. Only fill one in when the page
+    // does not provide it, so a book dropped into this template still gets a
+    // description without clobbering an authored one.
     var mq = document.querySelector('meta[name="description"]');
-    if (mq) mq.setAttribute("content", meta.blurb || meta.title || "");
+    if (mq && !(mq.getAttribute("content") || "").trim()) {
+      mq.setAttribute("content", meta.blurb || meta.title || "");
+    }
 
     buildDrawer();
   }
