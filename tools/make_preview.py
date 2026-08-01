@@ -357,7 +357,7 @@ def build_preview(meta: dict) -> Image.Image:
     foot = f"ಆನ್\u200Cಲೈನ್ ಓದುಗ  ·  {meta['chapters']} chapters  ·  free to read"
     draw_text(img, (x, fy), foot, 19 * SCALE, INK_SOFT, SANS_LATIN_REG, SANS_KN_REG)
     draw_text(
-        img, (x, fy + 32 * SCALE), "prathvirajkodachadri.github.io/nannolagina-devaru",
+        img, (x, fy + 32 * SCALE), "https://prathvirajkodachadri.github.io/nannolagina-devaru/",
         17 * SCALE, INK_FAINT, SANS_LATIN_REG, SANS_KN_REG, tracking=0.4 * SCALE,
     )
 
